@@ -98,21 +98,28 @@ func get_harvest_window_days() -> int:
     var gm = get_node("../../../GameManager")
     return int(gm.get_crop_data(crop_name).get("harvest_window_days", 2))
 
+func get_rating_stars() -> String:
+    var filled: int = clamp(upgrade_level - 1, 0, 3)
+    return "★".repeat(filled) + "☆".repeat(3 - filled)
+
 func get_upgrade_description() -> String:
     var gm = get_node("../../../GameManager")
     var current: Dictionary = gm.get_upgrade_data(upgrade_level)
     var next: Dictionary = gm.get_next_upgrade_data(upgrade_level)
+    var rating: String = get_rating_stars()
 
     if next.is_empty():
-        return "%s\nУрожай: ×%d\nСокращение роста: %d дн.\nМаксимальный уровень" % [
+        return "%s\nРейтинг: %s\nУрожай: ×%d\nСокращение роста: %d дн.\nМаксимальный уровень" % [
             current.get("name", "Грядка"),
+            rating,
             int(current.get("yield_multiplier", 1)),
             int(current.get("growth_reduction_days", 0))
         ]
 
-    return "%s → %s\nУрожай: ×%d → ×%d\nСокращение роста: %d → %d дн.\nСтоимость улучшения: $%d" % [
+    return "%s → %s\nРейтинг: %s\nУрожай: ×%d → ×%d\nСокращение роста: %d → %d дн.\nСтоимость улучшения: $%d" % [
         current.get("name", "Грядка"),
         next.get("name", "Улучшение"),
+        rating,
         int(current.get("yield_multiplier", 1)),
         int(next.get("yield_multiplier", 1)),
         int(current.get("growth_reduction_days", 0)),
@@ -138,6 +145,10 @@ func _draw() -> void:
     if upgrade_level > 1:
         draw_circle(Vector2(31, -18), 7, Color("#d6b45f"))
         draw_string(ThemeDB.fallback_font, Vector2(28, -14), str(upgrade_level), HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color("#3a2b20"))
+
+    # Rating is tied to upgrade level: 0 stars at L1, 3 stars at L4.
+    var stars: String = get_rating_stars()
+    draw_string(ThemeDB.fallback_font, Vector2(-36, -34), stars, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("#f2d27a"))
 
     if watered:
         draw_line(Vector2(-24, -18), Vector2(-28, -10), Color("#5b7f8a"), 2.0)
