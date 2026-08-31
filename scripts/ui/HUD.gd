@@ -50,8 +50,6 @@ func _process(delta: float) -> void:
     carrot_button.text = "✓ Морковь" if player.selected_crop == "Морковь" else "Морковь"
     potato_button.text = "✓ Картофель" if player.selected_crop == "Картофель" else "Картофель"
 
-    # At $0 the player may continue to the next day and wait for existing crops.
-    # The one-time emergency grant is a separate safety net for a cash-flow dead end.
     emergency_button.visible = gm.can_claim_emergency_funds()
     next_day_button.visible = time_manager.debug_controls_enabled
 
@@ -62,11 +60,17 @@ func _process(delta: float) -> void:
     var plot = player.current_plot
     var sell_point = player.current_sell_point
     var mentor = player.current_mentor
+    var npc = player.current_npc
     upgrade_label.visible = false
 
     if mentor != null and player._is_closest_interactable(mentor):
         prompt_label.visible = true
         prompt_label.text = "E  Поговорить с Эльс"
+        return
+
+    if npc != null:
+        prompt_label.visible = true
+        prompt_label.text = "E  Поговорить с %s" % npc.display_name
         return
 
     if sell_point != null and (plot == null or player.global_position.distance_to(sell_point.global_position) < player.global_position.distance_to(plot.global_position)):
