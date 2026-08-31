@@ -52,6 +52,9 @@ func advance_day() -> void:
         var relationship_manager = get_tree().get_first_node_in_group("relationship_manager")
         if relationship_manager != null:
             relationship_manager.change_relationship(str(order.get("npc_id", "")), -10)
+        var hud = get_node_or_null("../HUD")
+        if hud != null:
+            hud.show_message("Заказ просрочен: %s ×%d" % [str(order.get("crop_name", "")), int(order.get("quantity", 0))])
         order_failed.emit(order)
 
 func get_order_text(order: Dictionary) -> String:
