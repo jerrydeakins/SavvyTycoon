@@ -82,8 +82,14 @@ func _process(delta: float) -> void:
         return
 
     prompt_label.visible = true
-    upgrade_label.visible = true
-    upgrade_label.text = "U  Улучшение грядки\n" + plot.get_upgrade_description()
+
+    var next_upgrade: Dictionary = gm.get_next_upgrade_data(plot.upgrade_level)
+    if next_upgrade.is_empty():
+        upgrade_label.visible = true
+        upgrade_label.text = plot.get_upgrade_description()
+    else:
+        upgrade_label.visible = true
+        upgrade_label.text = "U  Улучшение грядки\n" + plot.get_upgrade_description()
 
     match plot.state:
         STATE_EMPTY:
