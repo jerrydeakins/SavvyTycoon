@@ -42,6 +42,11 @@ func complete_order(npc_id: String, crop_name: String, quantity: int) -> Diction
         order["status"] = "completed"
         active_orders.erase(order)
         npc_cooldowns[npc_id] = 1
+
+        var relationship_manager = get_tree().get_first_node_in_group("relationship_manager")
+        if relationship_manager != null:
+            relationship_manager.change_relationship(npc_id, 20)
+
         order_completed.emit(order)
         return order
     return {}
@@ -65,6 +70,7 @@ func advance_day() -> void:
         var hud = get_node_or_null("../HUD")
         if hud != null:
             hud.show_message("Заказ просрочен: %s ×%d" % [str(order.get("crop_name", "")), int(order.get("quantity", 0))])
+        npc_cooldowns[str(order.get("npc_id", ""))] = 1
         order_failed.emit(order)
 
 func get_order_text(order: Dictionary) -> String:
