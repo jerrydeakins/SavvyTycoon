@@ -12,6 +12,14 @@ var npc_cooldowns: Dictionary = {}
 func _ready() -> void:
     add_to_group("order_manager")
 
+func _get_relationship_manager():
+    # RelationshipManager is a sibling in Main. Prefer the direct node so the
+    # order result cannot silently fail because a group was not registered.
+    var manager = get_node_or_null("../RelationshipManager")
+    if manager != null:
+        return manager
+    return get_tree().get_first_node_in_group("relationship_manager")
+
 func create_order(npc_id: String, crop_name: String, quantity: int, reward: int, days_left: int) -> Dictionary:
     if is_npc_on_cooldown(npc_id):
         return {}
@@ -39,14 +47,20 @@ func complete_order(npc_id: String, crop_name: String, quantity: int) -> Diction
             continue
         if order.get("crop_name", "") != crop_name or int(order.get("quantity", 0)) != quantity:
             return {}
+
         order["status"] = "completed"
         active_orders.erase(order)
         npc_cooldowns[npc_id] = 1
 
-        var relationship_manager = get_tree().get_first_node_in_group("relationship_manager")
+        var relationship_manager = _get_relationship_manager()
+        var relationship_after: int = 0
         if relationship_manager != null:
-            relationship_manager.change_relationship(npc_id, 20)
+            relationship_after = relationship_manager.change_relationship(npc_id, 20)
+        else:
+            push_error("OrderManager: RelationshipManager not found; relationship was not updated for " + npc_id)
 
+        order["relationship_change"] = 20
+        order["relationship_after"] = relationship_after
         order_completed.emit(order)
         return order
     return {}
@@ -64,9 +78,13 @@ func advance_day() -> void:
     for order in expired:
         order["status"] = "failed"
         active_orders.erase(order)
-        var relationship_manager = get_tree().get_first_node_in_group("relationship_manager")
+        var relationship_manager = _get_relationship_manager()
         if relationship_manager != null:
-            relationship_manager.change_relationship(str(order.get("npc_id", "")), -10)
+            var relationship_after: int = relationship_manager.change_relationship(str(order.get("npc_id", "")), -10)
+            order["relationship_change"] = -10
+            order["relationship_after"] = relationship_after
+        else:
+            push_error("OrderManager: RelationshipManager not found; relationship was not updated for failed order")
         var hud = get_node_or_null("../HUD")
         if hud != null:
             hud.show_message("Заказ просрочен: %s ×%d" % [str(order.get("crop_name", "")), int(order.get("quantity", 0))])
