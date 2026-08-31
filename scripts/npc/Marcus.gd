@@ -1,10 +1,13 @@
 extends NPC
 class_name Marcus
 
-@export var order_crop: String = "Морковь"
-@export var order_quantity: int = 5
-@export var order_reward: int = 42
-@export var order_days: int = 3
+const ORDER_STAGES := {
+    0: {"crop": "Морковь", "quantity": 5, "reward": 42, "days": 3, "gain": 20},
+    1: {"crop": "Морковь", "quantity": 8, "reward": 70, "days": 4, "gain": 20},
+    2: {"crop": "Картофель", "quantity": 6, "reward": 75, "days": 5, "gain": 20},
+    3: {"crop": "Морковь", "quantity": 12, "reward": 110, "days": 5, "gain": 20},
+    4: {"crop": "Картофель", "quantity": 10, "reward": 135, "days": 6, "gain": 20}
+}
 
 func _ready() -> void:
     npc_id = "marcus_van_dijk"
@@ -13,14 +16,27 @@ func _ready() -> void:
     dialogue_pages = ["Ты тот самый новый фермер? Посмотрим, что у тебя получится.", "Мне не нужно много. Мне нужно, чтобы ты привозил именно то, что обещал, и тогда, когда обещал."]
     super._ready()
 
+func _get_order_stage(relationship: int) -> Dictionary:
+    var level := clampi(int(relationship / 20), 0, 4)
+    return ORDER_STAGES[level].duplicate()
+
+func _get_relationship_progress_text(relationship: int) -> String:
+    if relationship >= 100:
+        return "Максимальный уровень отношений"
+    var next_level := (relationship / 20 + 1) * 20
+    return "До следующего уровня: %d" % next_level
+
 func interact(hud) -> void:
     var relationship: int = get_relationship()
     var title: String = get_relationship_title()
     var order_manager = get_tree().get_first_node_in_group("order_manager")
-    var gm = get_node("../GameManager")
+    var gm = get_node_or_null("../GameManager")
     var pages: Array[String] = ["Маркус ван Дейк\nОтношение: %d/100 — %s" % [relationship, title]]
 
-    if order_manager == null:
+    if relationship > 0:
+        pages[0] += "\n" + _get_relationship_progress_text(relationship)
+
+    if order_manager == null or gm == null:
         pages.append("Сейчас я не могу оформить заказ. Загляни позже.")
         hud.start_dialogue(display_name, pages)
         return
@@ -36,10 +52,8 @@ func interact(hud) -> void:
                 var reward: int = int(completed["reward"])
                 var new_relationship: int = int(completed.get("relationship_after", get_relationship()))
                 gm.add_money(reward)
-                # Refresh the header after completing the order. Previously the
-                # first dialogue page kept the pre-completion 0/100 value.
                 pages[0] = "Маркус ван Дейк\nОтношение: %d/100 — %s" % [new_relationship, get_relationship_title()]
-                pages.append("Отлично. Всё на месте.\nОплата: +$%d\nОтношение: +20\nТеперь: %d/100 — %s" % [reward, new_relationship, get_relationship_title()])
+                pages.append("Отлично. Всё на месте.\nОплата: +$%d\nОтношение: +%d\nТеперь: %d/100 — %s" % [reward, int(completed.get("relationship_change", 0)), new_relationship, get_relationship_title()])
                 hud.start_dialogue(display_name, pages)
                 return
         pages.append(order_manager.get_order_text(order))
@@ -52,12 +66,14 @@ func interact(hud) -> void:
         hud.start_dialogue(display_name, pages)
         return
 
-    var new_order: Dictionary = order_manager.create_order(npc_id, order_crop, order_quantity, order_reward, order_days)
+    var stage := _get_order_stage(relationship)
+    var new_order: Dictionary = order_manager.create_order(npc_id, str(stage["crop"]), int(stage["quantity"]), int(stage["reward"]), int(stage["days"]))
     if new_order.is_empty():
         pages.append("Сейчас у меня нет нового заказа. Загляни позже.")
         hud.start_dialogue(display_name, pages)
         return
-    pages.append("Давай начнём с малого. Мне нужно %d шт. %s. Привези их в течение %d дней — заплачу $%d." % [int(new_order["quantity"]), str(new_order["crop_name"]), int(new_order["days_left"]), int(new_order["reward"])])
+
+    pages.append("Есть новое предложение. Мне нужно %d шт. %s. Привези их в течение %d дней — заплачу $%d." % [int(new_order["quantity"]), str(new_order["crop_name"]), int(new_order["days_left"]), int(new_order["reward"])])
     hud.start_dialogue(display_name, pages)
 
 func _draw() -> void:
