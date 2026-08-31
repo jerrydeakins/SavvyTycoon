@@ -44,7 +44,16 @@ func interact(hud) -> void:
         hud.start_dialogue(display_name, pages)
         return
 
+    if order_manager.is_npc_on_cooldown(npc_id):
+        pages.append("Спасибо за поставку. Давай продолжим завтра.")
+        hud.start_dialogue(display_name, pages)
+        return
+
     var new_order: Dictionary = order_manager.create_order(npc_id, order_crop, order_quantity, order_reward, order_days)
+    if new_order.is_empty():
+        pages.append("Сейчас у меня нет нового заказа. Загляни позже.")
+        hud.start_dialogue(display_name, pages)
+        return
     pages.append("Давай начнём с малого. Мне нужно %d шт. %s. Привези их в течение %d дней — заплачу $%d." % [int(new_order["quantity"]), str(new_order["crop_name"]), int(new_order["days_left"]), int(new_order["reward"])])
     hud.start_dialogue(display_name, pages)
 
