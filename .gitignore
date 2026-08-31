@@ -1,5 +1,6 @@
 # Imported translations (automatically generated from CSV files)
 *.translation
+*.godot
 
 # Mono-specific ignores
 .mono/
