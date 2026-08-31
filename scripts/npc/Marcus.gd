@@ -1,7 +1,6 @@
 extends NPC
 class_name Marcus
 
-@export var order_min_relationship: int = 20
 @export var order_crop: String = "Морковь"
 @export var order_quantity: int = 5
 @export var order_reward: int = 42
@@ -11,21 +10,15 @@ func _ready() -> void:
     npc_id = "marcus_van_dijk"
     display_name = "Маркус ван Дейк"
     relationship_gain_on_talk = 0
+    dialogue_pages = ["Ты тот самый новый фермер? Посмотрим, что у тебя получится.", "Мне не нужно много. Мне нужно, чтобы ты привозил именно то, что обещал, и тогда, когда обещал."]
     super._ready()
 
 func interact(hud) -> void:
     var relationship: int = get_relationship()
     var title: String = get_relationship_title()
     var order_manager = get_tree().get_first_node_in_group("order_manager")
-
-    var pages: Array[String] = [
-        "Маркус ван Дейк\nОтношение: %d/100 — %s" % [relationship, title]
-    ]
-
-    if relationship < order_min_relationship:
-        pages.append("Я пока тебя почти не знаю. Поработаем — тогда и поговорим о поставках.")
-        hud.start_dialogue(display_name, pages)
-        return
+    var gm = get_node("../GameManager")
+    var pages: Array[String] = ["Маркус ван Дейк\nОтношение: %d/100 — %s" % [relationship, title]]
 
     if order_manager == null:
         pages.append("Сейчас я не могу оформить заказ. Загляни позже.")
@@ -34,20 +27,25 @@ func interact(hud) -> void:
 
     if order_manager.has_active_order(npc_id):
         var order: Dictionary = order_manager.get_active_order(npc_id)
+        var crop_name: String = str(order["crop_name"])
+        var quantity: int = int(order["quantity"])
+        if gm.get_crop_quantity(crop_name) >= quantity:
+            gm.remove_from_storage(crop_name, quantity)
+            var completed: Dictionary = order_manager.complete_order(npc_id, crop_name, quantity)
+            if not completed.is_empty():
+                var reward: int = int(completed["reward"])
+                gm.add_money(reward)
+                var new_relationship: int = change_relationship(20)
+                pages.append("Отлично. Всё на месте.\nОплата: +$%d\nОтношение: %d/100" % [reward, new_relationship])
+                hud.start_dialogue(display_name, pages)
+                return
         pages.append(order_manager.get_order_text(order))
-        pages.append("Привези заказ мне до истечения срока.")
+        pages.append("Когда соберёшь нужное количество, принеси его мне. Срок продолжает идти.")
         hud.start_dialogue(display_name, pages)
         return
 
-    var new_order: Dictionary = order_manager.create_order(
-        npc_id, order_crop, order_quantity, order_reward, order_days
-    )
-    pages.append("Мне нужно %d шт. %s. Если привезёшь их в течение %d дней, заплачу $%d." % [
-        int(new_order["quantity"]),
-        str(new_order["crop_name"]),
-        int(new_order["days_left"]),
-        int(new_order["reward"])
-    ])
+    var new_order: Dictionary = order_manager.create_order(npc_id, order_crop, order_quantity, order_reward, order_days)
+    pages.append("Давай начнём с малого. Мне нужно %d шт. %s. Привези их в течение %d дней — заплачу $%d." % [int(new_order["quantity"]), str(new_order["crop_name"]), int(new_order["days_left"]), int(new_order["reward"])])
     hud.start_dialogue(display_name, pages)
 
 func _draw() -> void:
