@@ -1,9 +1,9 @@
 extends Node
 
-const BUILD_VERSION: String = "0.1.0.0040-dev"
+const BUILD_VERSION: String = "0.1.0.0050-dev"
 
-# Central economy/state layer. Crop and upgrade data live here so future
-# continents can reuse the same rules with different content packs.
+# Central economy/state layer. Crop, upgrade and relationship data live here
+# so all gameplay systems read and write the same persistent runtime state.
 
 var money: int = 150
 var day: int = 1
@@ -11,6 +11,10 @@ var season: int = 1
 var storage_used: int = 0
 var storage_capacity: int = 20
 var inventory: Dictionary = {}
+var relationships: Dictionary = {}
+
+const MIN_RELATIONSHIP: int = 0
+const MAX_RELATIONSHIP: int = 100
 
 const EMERGENCY_FUNDS: int = 10
 var emergency_funds_claimed: bool = false
@@ -45,6 +49,40 @@ func spend_money(amount: int) -> bool:
         return false
     money -= amount
     return true
+
+func get_relationship(npc_id: String) -> int:
+    return clampi(int(relationships.get(npc_id, 0)), MIN_RELATIONSHIP, MAX_RELATIONSHIP)
+
+func change_relationship(npc_id: String, amount: int) -> int:
+    var value: int = clampi(get_relationship(npc_id) + amount, MIN_RELATIONSHIP, MAX_RELATIONSHIP)
+    relationships[npc_id] = value
+    return value
+
+func set_relationship(npc_id: String, value: int) -> int:
+    var clamped: int = clampi(value, MIN_RELATIONSHIP, MAX_RELATIONSHIP)
+    relationships[npc_id] = clamped
+    return clamped
+
+func get_relationship_level(npc_id: String) -> int:
+    var value := get_relationship(npc_id)
+    if value < 20:
+        return 0
+    if value < 40:
+        return 1
+    if value < 60:
+        return 2
+    if value < 80:
+        return 3
+    return 4
+
+func get_relationship_title(npc_id: String) -> String:
+    match get_relationship_level(npc_id):
+        0: return "Незнакомец"
+        1: return "Знакомый"
+        2: return "Доверие"
+        3: return "Партнёр"
+        4: return "Надёжный партнёр"
+    return "Незнакомец"
 
 func get_crop_data(crop_name: String) -> Dictionary:
     return CROPS.get(crop_name, {})
