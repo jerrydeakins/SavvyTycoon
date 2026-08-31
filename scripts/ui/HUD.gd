@@ -17,6 +17,7 @@ extends CanvasLayer
 @onready var dialogue_text: Label = $DialoguePanel/Margin/VBox/Text
 @onready var dialogue_continue_button: Button = $DialoguePanel/Margin/VBox/Actions/Continue
 @onready var dialogue_close_button: Button = $DialoguePanel/Margin/VBox/Actions/Close
+@onready var version_label: Label = $Version
 
 const STATE_EMPTY: int = 0
 const STATE_PLANTED: int = 1
@@ -36,6 +37,7 @@ func _ready() -> void:
     potato_button.pressed.connect(_on_crop_selected.bind("Картофель"))
     dialogue_continue_button.pressed.connect(_on_dialogue_continue_pressed)
     dialogue_close_button.pressed.connect(_on_dialogue_close_pressed)
+    version_label.text = "Build %s" % get_node("../GameManager").BUILD_VERSION
 
 func _process(delta: float) -> void:
     var gm = get_node("../GameManager")
