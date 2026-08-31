@@ -8,16 +8,11 @@ signal order_failed(order)
 var active_orders: Array[Dictionary] = []
 var next_order_id: int = 1
 
+func _ready() -> void:
+    add_to_group("order_manager")
+
 func create_order(npc_id: String, crop_name: String, quantity: int, reward: int, days_left: int) -> Dictionary:
-    var order := {
-        "id": next_order_id,
-        "npc_id": npc_id,
-        "crop_name": crop_name,
-        "quantity": quantity,
-        "reward": reward,
-        "days_left": days_left,
-        "status": "active"
-    }
+    var order := {"id": next_order_id, "npc_id": npc_id, "crop_name": crop_name, "quantity": quantity, "reward": reward, "days_left": days_left, "status": "active"}
     next_order_id += 1
     active_orders.append(order)
     order_created.emit(order)
@@ -38,7 +33,6 @@ func complete_order(npc_id: String, crop_name: String, quantity: int) -> Diction
             continue
         if order.get("crop_name", "") != crop_name or int(order.get("quantity", 0)) != quantity:
             return {}
-
         order["status"] = "completed"
         active_orders.erase(order)
         order_completed.emit(order)
@@ -51,16 +45,10 @@ func advance_day() -> void:
         order["days_left"] = int(order.get("days_left", 0)) - 1
         if int(order["days_left"]) <= 0:
             expired.append(order)
-
     for order in expired:
         order["status"] = "failed"
         active_orders.erase(order)
         order_failed.emit(order)
 
 func get_order_text(order: Dictionary) -> String:
-    return "Заказ: %s ×%d\nНаграда: $%d\nОсталось дней: %d" % [
-        order.get("crop_name", ""),
-        int(order.get("quantity", 0)),
-        int(order.get("reward", 0)),
-        int(order.get("days_left", 0))
-    ]
+    return "Заказ: %s ×%d\nНаграда: $%d\nОсталось дней: %d" % [str(order.get("crop_name", "")), int(order.get("quantity", 0)), int(order.get("reward", 0)), int(order.get("days_left", 0))]
