@@ -11,6 +11,12 @@ func _ready() -> void:
     queue_redraw()
 
 func get_relationship_manager():
+    # RelationshipManager is a sibling of NPC instances in Main.
+    # Prefer the direct node so NPCs always read the same shared state that
+    # OrderManager updates. Keep the group lookup as a fallback for future scenes.
+    var manager = get_node_or_null("../RelationshipManager")
+    if manager != null:
+        return manager
     return get_tree().get_first_node_in_group("relationship_manager")
 
 func get_relationship() -> int:
