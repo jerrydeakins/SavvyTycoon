@@ -34,7 +34,9 @@ func _physics_process(_delta: float) -> void:
     if Input.is_action_just_pressed("interact"):
         if _is_closest_interactable(current_mentor):
             current_mentor.interact(get_node("../HUD"))
-        elif _is_closest_interactable(current_npc):
+        elif current_npc != null:
+            # NPCs get interaction priority while the player is in range.
+            # This prevents a nearby farm plot from making an NPC order impossible to submit.
             current_npc.interact(get_node("../HUD"))
         elif _is_closest_interactable(current_sell_point):
             _sell_at_point(current_sell_point)
