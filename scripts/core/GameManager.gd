@@ -1,6 +1,6 @@
 extends Node
 
-const BUILD_VERSION: String = "0.1.0.0010-dev"
+const BUILD_VERSION: String = "0.1.0.0020-dev"
 
 # Central economy/state layer. Crop and upgrade data live here so future
 # continents can reuse the same rules with different content packs.
