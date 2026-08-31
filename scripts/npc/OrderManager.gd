@@ -45,9 +45,13 @@ func advance_day() -> void:
         order["days_left"] = int(order.get("days_left", 0)) - 1
         if int(order["days_left"]) <= 0:
             expired.append(order)
+
     for order in expired:
         order["status"] = "failed"
         active_orders.erase(order)
+        var relationship_manager = get_tree().get_first_node_in_group("relationship_manager")
+        if relationship_manager != null:
+            relationship_manager.change_relationship(str(order.get("npc_id", "")), -10)
         order_failed.emit(order)
 
 func get_order_text(order: Dictionary) -> String:
