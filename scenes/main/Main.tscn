@@ -52,6 +52,7 @@ groups = ["relationship_manager"]
 script = ExtResource("8")
 [node name="OrderManager" type="Node" parent="."]
 script = ExtResource("10")
+groups = ["order_manager"]
 [node name="TimeManager" type="Node" parent="."]
 script = ExtResource("2")
 
@@ -230,7 +231,7 @@ text = "Эльс ван дер Берг"
 [node name="Text" type="Label" parent="HUD/DialoguePanel/Margin/VBox"]
 autowrap_mode = 2
 text = ""
-[node name="Actions" type="HBoxContainer" parent="HUD/DialoguePanel/Margin/VBox/Actions"]
+[node name="Actions" type="HBoxContainer" parent="HUD/DialoguePanel/Margin/VBox"]
 alignment = 2
 theme_override_constants/separation = 10
 [node name="Continue" type="Button" parent="HUD/DialoguePanel/Margin/VBox/Actions"]
@@ -240,6 +241,6 @@ text = "Закрыть"
 [node name="Version" type="Label" parent="HUD"]
 offset_left = 20.0
 offset_top = 685.0
-offset_right = 180.0
+offset_right = 200.0
 offset_bottom = 710.0
-text = "Build 0.1.0-dev"
+text = "Build 0.1.0.0020-dev"
