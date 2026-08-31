@@ -32,10 +32,30 @@ const CROPS := {
 }
 
 const PLOT_UPGRADES := {
-    1: {"cost": 0, "growth_days": 2, "yield": 1, "name": "Базовая грядка"},
-    2: {"cost": 30, "growth_days": 2, "yield": 2, "name": "Улучшенная почва"},
-    3: {"cost": 60, "growth_days": 1, "yield": 2, "name": "Плодородная почва"},
-    4: {"cost": 120, "growth_days": 1, "yield": 3, "name": "Премиальная грядка"}
+    1: {
+        "cost": 0,
+        "growth_reduction_days": 0,
+        "yield_multiplier": 1,
+        "name": "Базовая грядка"
+    },
+    2: {
+        "cost": 30,
+        "growth_reduction_days": 0,
+        "yield_multiplier": 2,
+        "name": "Улучшенная почва"
+    },
+    3: {
+        "cost": 60,
+        "growth_reduction_days": 1,
+        "yield_multiplier": 2,
+        "name": "Плодородная почва"
+    },
+    4: {
+        "cost": 120,
+        "growth_reduction_days": 1,
+        "yield_multiplier": 3,
+        "name": "Премиальная грядка"
+    }
 }
 
 func add_money(amount: int) -> void:
