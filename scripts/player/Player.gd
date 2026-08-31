@@ -94,7 +94,7 @@ func _sell_at_point(point) -> void:
     var hud = get_node("../HUD")
 
     if gm.storage_used <= 0:
-        hud.show_message("На складе нет моркови")
+        hud.show_message("Склад пуст")
         return
 
     var sale: Dictionary = point.sell_all()
