@@ -1,5 +1,5 @@
 78098b89c88a74ebe8c20117b8754620
-::res://::1788197844
+::res://::1788199851
 FarmPlot.gd::GDScript::1694407622980339312::1788183446::0::1::::<>StaticBody2D<><>0<>0<><>::
 GameManager.gd::GDScript::6017788937008670616::1788182854::0::1::::<>Node<><>0<>0<><>::
 HUD.gd::GDScript::7680013059544558295::1788182854::0::1::::<>CanvasLayer<><>0<>0<><>::
@@ -38,9 +38,9 @@ Marcus.gd::GDScript::4850658953082052553::1788196713::0::1::::Marcus<>NPC<><>0<>
 NPC.gd::GDScript::6915232144350861995::1788196713::0::1::::NPC<>StaticBody2D<><>0<>0<><>::
 OrderManager.gd::GDScript::7529536304841526073::1788196713::0::1::::OrderManager<>Node<><>0<>0<><>::
 RelationshipManager.gd::GDScript::4351173571069717544::1788196713::0::1::::RelationshipManager<>Node<><>0<>0<><>::
-::res://scripts/player/::1788196713
-Player.gd::GDScript::942475175474965965::1788196713::0::1::::<>CharacterBody2D<><>0<>0<><>::
-::res://scripts/ui/::1788195713
-HUD.gd::GDScript::538348296733686222::1788195713::0::1::::<>CanvasLayer<><>0<>0<><>::
+::res://scripts/player/::1788198094
+Player.gd::GDScript::942475175474965965::1788198094::0::1::::<>CharacterBody2D<><>0<>0<><>::
+::res://scripts/ui/::1788198094
+HUD.gd::GDScript::538348296733686222::1788198094::0::1::::<>CanvasLayer<><>0<>0<><>::
 ::res://script_templates/::1788167266
 ::res://text_editor_themes/::1788167266
