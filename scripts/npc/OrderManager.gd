@@ -1,0 +1,66 @@
+extends Node
+class_name OrderManager
+
+signal order_created(order)
+signal order_completed(order)
+signal order_failed(order)
+
+var active_orders: Array[Dictionary] = []
+var next_order_id: int = 1
+
+func create_order(npc_id: String, crop_name: String, quantity: int, reward: int, days_left: int) -> Dictionary:
+    var order := {
+        "id": next_order_id,
+        "npc_id": npc_id,
+        "crop_name": crop_name,
+        "quantity": quantity,
+        "reward": reward,
+        "days_left": days_left,
+        "status": "active"
+    }
+    next_order_id += 1
+    active_orders.append(order)
+    order_created.emit(order)
+    return order
+
+func get_active_order(npc_id: String) -> Dictionary:
+    for order in active_orders:
+        if order.get("npc_id", "") == npc_id and order.get("status", "") == "active":
+            return order
+    return {}
+
+func has_active_order(npc_id: String) -> bool:
+    return not get_active_order(npc_id).is_empty()
+
+func complete_order(npc_id: String, crop_name: String, quantity: int) -> Dictionary:
+    for order in active_orders:
+        if order.get("npc_id", "") != npc_id or order.get("status", "") != "active":
+            continue
+        if order.get("crop_name", "") != crop_name or int(order.get("quantity", 0)) != quantity:
+            return {}
+
+        order["status"] = "completed"
+        active_orders.erase(order)
+        order_completed.emit(order)
+        return order
+    return {}
+
+func advance_day() -> void:
+    var expired: Array[Dictionary] = []
+    for order in active_orders:
+        order["days_left"] = int(order.get("days_left", 0)) - 1
+        if int(order["days_left"]) <= 0:
+            expired.append(order)
+
+    for order in expired:
+        order["status"] = "failed"
+        active_orders.erase(order)
+        order_failed.emit(order)
+
+func get_order_text(order: Dictionary) -> String:
+    return "Заказ: %s ×%d\nНаграда: $%d\nОсталось дней: %d" % [
+        order.get("crop_name", ""),
+        int(order.get("quantity", 0)),
+        int(order.get("reward", 0)),
+        int(order.get("days_left", 0))
+    ]
