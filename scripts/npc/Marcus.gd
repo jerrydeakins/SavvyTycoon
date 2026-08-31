@@ -35,8 +35,8 @@ func interact(hud) -> void:
             if not completed.is_empty():
                 var reward: int = int(completed["reward"])
                 gm.add_money(reward)
-                var new_relationship: int = change_relationship(20)
-                pages.append("Отлично. Всё на месте.\nОплата: +$%d\nОтношение: %d/100" % [reward, new_relationship])
+                var new_relationship: int = get_relationship()
+                pages.append("Отлично. Всё на месте.\nОплата: +$%d\nОтношение: %d/100 — %s" % [reward, new_relationship, get_relationship_title()])
                 hud.start_dialogue(display_name, pages)
                 return
         pages.append(order_manager.get_order_text(order))
