@@ -104,19 +104,20 @@ func get_upgrade_description() -> String:
     var next: Dictionary = gm.get_next_upgrade_data(upgrade_level)
 
     if next.is_empty():
-        return "%s\nУрожай: %d\nРост: %d дн.\nМаксимальный уровень" % [
+        return "%s\nУрожай: ×%d\nСокращение роста: %d дн.\nМаксимальный уровень" % [
             current.get("name", "Грядка"),
             int(current.get("yield_multiplier", 1)),
             int(current.get("growth_reduction_days", 0))
         ]
 
-    return "%s → %s\nУрожай: ×%d → ×%d\nСокращение роста: %d → %d дн." % [
+    return "%s → %s\nУрожай: ×%d → ×%d\nСокращение роста: %d → %d дн.\nСтоимость улучшения: $%d" % [
         current.get("name", "Грядка"),
         next.get("name", "Улучшение"),
         int(current.get("yield_multiplier", 1)),
         int(next.get("yield_multiplier", 1)),
         int(current.get("growth_reduction_days", 0)),
-        int(next.get("growth_reduction_days", 0))
+        int(next.get("growth_reduction_days", 0)),
+        int(next.get("cost", 0))
     ]
 
 func _draw() -> void:
