@@ -34,9 +34,12 @@ func interact(hud) -> void:
             var completed: Dictionary = order_manager.complete_order(npc_id, crop_name, quantity)
             if not completed.is_empty():
                 var reward: int = int(completed["reward"])
+                var new_relationship: int = int(completed.get("relationship_after", get_relationship()))
                 gm.add_money(reward)
-                var new_relationship: int = get_relationship()
-                pages.append("Отлично. Всё на месте.\nОплата: +$%d\nОтношение: %d/100 — %s" % [reward, new_relationship, get_relationship_title()])
+                # Refresh the header after completing the order. Previously the
+                # first dialogue page kept the pre-completion 0/100 value.
+                pages[0] = "Маркус ван Дейк\nОтношение: %d/100 — %s" % [new_relationship, get_relationship_title()]
+                pages.append("Отлично. Всё на месте.\nОплата: +$%d\nОтношение: +20\nТеперь: %d/100 — %s" % [reward, new_relationship, get_relationship_title()])
                 hud.start_dialogue(display_name, pages)
                 return
         pages.append(order_manager.get_order_text(order))
