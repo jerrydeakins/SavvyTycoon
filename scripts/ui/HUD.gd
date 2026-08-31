@@ -94,10 +94,14 @@ func _process(delta: float) -> void:
             prompt_label.text = "E  Полить грядку"
         STATE_GROWING:
             if plot.watered:
-                var required_days: int = int(gm.get_upgrade_data(plot.upgrade_level).get("growth_days", 2))
+                var crop_data: Dictionary = gm.get_crop_data(plot.crop_name)
+                var upgrade_data: Dictionary = gm.get_upgrade_data(plot.upgrade_level)
+                var required_days: int = max(1, int(crop_data.get("growth_days", 2)) - int(upgrade_data.get("growth_reduction_days", 0)))
                 prompt_label.text = "Грядка полита  •  %d/%d дней" % [plot.growth_day, required_days]
             else:
-                var required_days: int = int(gm.get_upgrade_data(plot.upgrade_level).get("growth_days", 2))
+                var crop_data: Dictionary = gm.get_crop_data(plot.crop_name)
+                var upgrade_data: Dictionary = gm.get_upgrade_data(plot.upgrade_level)
+                var required_days: int = max(1, int(crop_data.get("growth_days", 2)) - int(upgrade_data.get("growth_reduction_days", 0)))
                 prompt_label.text = "E  Полить грядку  •  рост %d/%d" % [plot.growth_day, required_days]
         STATE_READY:
             var days_left: int = plot.get_harvest_window_days() - plot.ready_days
