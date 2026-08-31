@@ -23,7 +23,8 @@ func plant(crop: String) -> bool:
         return false
 
     crop_name = crop
-    crop_yield = int(crop_data.get("base_yield", 1)) * int(gm.get_upgrade_data(upgrade_level).get("yield", 1))
+    var upgrade_data: Dictionary = gm.get_upgrade_data(upgrade_level)
+    crop_yield = int(crop_data.get("base_yield", 1)) * int(upgrade_data.get("yield_multiplier", 1))
     state = State.PLANTED
     growth_day = 0
     ready_days = 0
@@ -58,7 +59,10 @@ func advance_growth_day() -> void:
 
     var gm = get_node("../../../GameManager")
     var crop_data: Dictionary = gm.get_crop_data(crop_name)
-    var required_days: int = int(gm.get_upgrade_data(upgrade_level).get("growth_days", crop_data.get("growth_days", 2)))
+    var upgrade_data: Dictionary = gm.get_upgrade_data(upgrade_level)
+    var base_growth_days: int = int(crop_data.get("growth_days", 2))
+    var growth_reduction_days: int = int(upgrade_data.get("growth_reduction_days", 0))
+    var required_days: int = max(1, base_growth_days - growth_reduction_days)
 
     if growth_day >= required_days:
         state = State.READY
@@ -102,17 +106,17 @@ func get_upgrade_description() -> String:
     if next.is_empty():
         return "%s\nУрожай: %d\nРост: %d дн.\nМаксимальный уровень" % [
             current.get("name", "Грядка"),
-            int(current.get("yield", 1)),
-            int(current.get("growth_days", 2))
+            int(current.get("yield_multiplier", 1)),
+            int(current.get("growth_reduction_days", 0))
         ]
 
-    return "%s → %s\nУрожай: %d → %d\nРост: %d → %d дн." % [
+    return "%s → %s\nУрожай: ×%d → ×%d\nСокращение роста: %d → %d дн." % [
         current.get("name", "Грядка"),
         next.get("name", "Улучшение"),
-        int(current.get("yield", 1)),
-        int(next.get("yield", 1)),
-        int(current.get("growth_days", 2)),
-        int(next.get("growth_days", 2))
+        int(current.get("yield_multiplier", 1)),
+        int(next.get("yield_multiplier", 1)),
+        int(current.get("growth_reduction_days", 0)),
+        int(next.get("growth_reduction_days", 0))
     ]
 
 func _draw() -> void:
