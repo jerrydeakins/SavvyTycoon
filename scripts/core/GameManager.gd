@@ -1,6 +1,6 @@
 extends Node
 
-const BUILD_VERSION: String = "0.1.0.0120-dev"
+const BUILD_VERSION: String = "0.1.0.0130-dev"
 
 # Central economy/state layer. Crop, upgrade and relationship data live here
 # so all gameplay systems read and write the same persistent runtime state.
@@ -30,6 +30,18 @@ const PLOT_UPGRADES := {
     3: {"cost": 60, "growth_reduction_days": 1, "yield_multiplier": 2, "name": "Плодородная почва"},
     4: {"cost": 120, "growth_reduction_days": 1, "yield_multiplier": 3, "name": "Премиальная грядка"}
 }
+
+func _ready() -> void:
+    var root: Node = get_parent()
+    var background: CanvasItem = root.get_node_or_null("Background") as CanvasItem
+    if background != null:
+        background.visible = false
+
+    var art: Sprite2D = Sprite2D.new()
+    art.texture = ResourceLoader.load("res://assets/world/farm_background.svg") as Texture2D
+    art.position = Vector2(640, 360)
+    art.z_index = -100
+    root.add_child(art)
 
 func add_money(amount: int) -> void:
     money += amount
