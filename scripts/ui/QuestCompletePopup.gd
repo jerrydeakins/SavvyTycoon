@@ -17,15 +17,15 @@ func show_result(speaker: String, reward: int, relationship_change: int, new_rel
     speaker_label.text = speaker
     reward_label.text = "+$%d" % reward
     relationship_label.text = "Отношение  +%d    →    %d/100" % [relationship_change, new_relationship]
-    level_label.text = "★ Новый уровень: %s" % relationship_title if level_up else relationship_title
+    level_label.text = "★ Новый уровень: %s" % relationship_title
     level_label.visible = level_up
     title_label.text = "ЗАКАЗ ВЫПОЛНЕН!"
 
     visible = true
     modulate = Color(1, 1, 1, 0)
     scale = Vector2(0.92, 0.92)
-    get_node("../..../TimeManager")
-    var time_manager = get_tree().root.get_node_or_null("Main/TimeManager")
+
+    var time_manager = get_node_or_null("../../TimeManager")
     if time_manager != null:
         time_manager.set_clock_paused(true)
 
@@ -36,7 +36,7 @@ func show_result(speaker: String, reward: int, relationship_change: int, new_rel
     close_button.grab_focus()
 
 func _on_close_pressed() -> void:
-    var time_manager = get_tree().root.get_node_or_null("Main/TimeManager")
+    var time_manager = get_node_or_null("../../TimeManager")
     if time_manager != null:
         time_manager.set_clock_paused(false)
     visible = false
