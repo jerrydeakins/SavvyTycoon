@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource path="res://scripts/core/GameManager.gd" type="Script" id="1"]
 [ext_resource path="res://scripts/core/TimeManager.gd" type="Script" id="2"]
@@ -10,6 +10,7 @@
 [ext_resource path="res://scripts/npc/RelationshipManager.gd" type="Script" id="8"]
 [ext_resource path="res://scripts/npc/Marcus.gd" type="Script" id="9"]
 [ext_resource path="res://scripts/npc/OrderManager.gd" type="Script" id="10"]
+[ext_resource path="res://scenes/ui/QuestCompletePopup.tscn" type="PackedScene" id="11"]
 
 [sub_resource type="RectangleShape2D" id="PlotShape"]
 size = Vector2(84, 56)
@@ -244,3 +245,4 @@ offset_top = 685.0
 offset_right = 230.0
 offset_bottom = 710.0
 text = ""
+[node name="QuestCompletePopup" parent="HUD" instance=ExtResource("11")]
