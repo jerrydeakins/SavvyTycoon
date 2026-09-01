@@ -18,6 +18,7 @@ extends CanvasLayer
 @onready var dialogue_continue_button: Button = $DialoguePanel/Margin/VBox/Actions/Continue
 @onready var dialogue_close_button: Button = $DialoguePanel/Margin/VBox/Actions/Close
 @onready var version_label: Label = $Version
+@onready var quest_complete_popup: Control = $QuestCompletePopup
 
 const STATE_EMPTY: int = 0
 const STATE_PLANTED: int = 1
@@ -146,6 +147,10 @@ func start_dialogue(title: String, pages: Array[String]) -> void:
 	get_node("../TimeManager").set_clock_paused(true)
 	dialogue_panel.visible = true
 	_show_current_dialogue_page()
+
+func show_quest_complete(speaker: String, reward: int, relationship_change: int, new_relationship: int, relationship_title: String, level_up: bool) -> void:
+	_close_dialogue()
+	quest_complete_popup.show_result(speaker, reward, relationship_change, new_relationship, relationship_title, level_up)
 
 func _show_current_dialogue_page() -> void:
 	var page_count: int = dialogue_pages.size()
