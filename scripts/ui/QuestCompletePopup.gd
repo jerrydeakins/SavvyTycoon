@@ -6,6 +6,7 @@ extends Control
 @onready var relationship_label: Label = $Center/Panel/Margin/VBox/Relationship
 @onready var level_label: Label = $Center/Panel/Margin/VBox/Level
 @onready var close_button: Button = $Center/Panel/Margin/VBox/Close
+@onready var panel: Control = $Center/Panel
 @onready var effects: Control = $Effects
 
 func _ready() -> void:
@@ -22,16 +23,17 @@ func show_result(speaker: String, reward: int, relationship_change: int, new_rel
     title_label.text = "ЗАКАЗ ВЫПОЛНЕН!"
 
     visible = true
-    modulate = Color(1, 1, 1, 0)
-    scale = Vector2(0.92, 0.92)
+    modulate = Color.WHITE
+    panel.modulate = Color(1, 1, 1, 0)
+    panel.scale = Vector2(0.88, 0.88)
 
     var time_manager = get_node_or_null("../../TimeManager")
     if time_manager != null:
         time_manager.set_clock_paused(true)
 
     var tween := create_tween().set_parallel(true)
-    tween.tween_property(self, "modulate", Color.WHITE, 0.2)
-    tween.tween_property(self, "scale", Vector2.ONE, 0.38).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+    tween.tween_property(panel, "modulate", Color.WHITE, 0.2)
+    tween.tween_property(panel, "scale", Vector2.ONE, 0.42).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
     effects.play()
     close_button.grab_focus()
 
