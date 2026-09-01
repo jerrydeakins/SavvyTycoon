@@ -42,7 +42,7 @@ func _draw() -> void:
         return
 
     var center := size * 0.5
-    var ray_alpha := max(0.0, 1.0 - elapsed / 1.5)
+    var ray_alpha: float = maxf(0.0, 1.0 - elapsed / 1.5)
     for i in range(16):
         var angle := TAU * float(i) / 16.0
         var inner := center + Vector2(cos(angle), sin(angle)) * 185.0
@@ -61,7 +61,7 @@ func _draw() -> void:
         var transformed := PackedVector2Array()
         for point in points:
             transformed.append(transform * point)
-        var alpha := clamp(1.0 - max(0.0, pos.y - size.y * 0.45) / (size.y * 0.65), 0.15, 1.0)
+        var alpha: float = clampf(1.0 - maxf(0.0, pos.y - size.y * 0.45) / (size.y * 0.65), 0.15, 1.0)
         var tone := int(item["shape"])
         var color := Color("#f6c453") if tone == 0 else (Color("#7ac7ff") if tone == 1 else Color("#ff7a7a"))
         color.a = alpha
@@ -74,7 +74,7 @@ func _draw() -> void:
         Vector2(center.x + 270.0, center.y + 100.0)
     ]
     var balloon_colors := [Color("#ff7a7a"), Color("#7ac7ff"), Color("#f6c453"), Color("#a6d96a")]
-    var balloon_alpha := min(1.0, elapsed / 0.35)
+    var balloon_alpha: float = minf(1.0, elapsed / 0.35)
     for i in range(balloon_positions.size()):
         var p: Vector2 = balloon_positions[i]
         var c: Color = balloon_colors[i]
