@@ -50,11 +50,13 @@ func interact(hud) -> void:
             var completed: Dictionary = order_manager.complete_order(npc_id, crop_name, quantity)
             if not completed.is_empty():
                 var reward: int = int(completed["reward"])
+                var relationship_change: int = int(completed.get("relationship_change", 0))
                 var new_relationship: int = int(completed.get("relationship_after", get_relationship()))
+                var old_level := clampi(int(relationship / 20), 0, 4)
+                var new_level := clampi(int(new_relationship / 20), 0, 4)
+                var level_up: bool = new_level > old_level
                 gm.add_money(reward)
-                pages[0] = "Маркус ван Дейк\nОтношение: %d/100 — %s" % [new_relationship, get_relationship_title()]
-                pages.append("Отлично. Всё на месте.\nОплата: +$%d\nОтношение: +%d\nТеперь: %d/100 — %s" % [reward, int(completed.get("relationship_change", 0)), new_relationship, get_relationship_title()])
-                hud.start_dialogue(display_name, pages)
+                hud.show_quest_complete(display_name, reward, relationship_change, new_relationship, get_relationship_title(), level_up)
                 return
         pages.append(order_manager.get_order_text(order))
         pages.append("Когда соберёшь нужное количество, принеси его мне. Срок продолжает идти.")
