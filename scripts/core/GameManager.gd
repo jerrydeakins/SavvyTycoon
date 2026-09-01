@@ -1,6 +1,6 @@
 extends Node
 
-const BUILD_VERSION: String = "0.1.0.0110-dev"
+const BUILD_VERSION: String = "0.1.0.0120-dev"
 
 # Central economy/state layer. Crop, upgrade and relationship data live here
 # so all gameplay systems read and write the same persistent runtime state.
